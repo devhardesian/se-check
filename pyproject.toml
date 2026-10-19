@@ -1,0 +1,57 @@
+[project]
+name = "se-check"
+version = "0.1.0"
+description = "Find Row Level Security and multi-tenant isolation holes in Supabase/Postgres. CLI + MCP server."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Edoardo" }]
+keywords = ["supabase", "postgres", "rls", "row-level-security", "security", "audit", "mcp", "multi-tenant"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Security",
+]
+dependencies = [
+    "mcp>=2.3,<3",
+    "psycopg[binary]>=3.2",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.urls]
+Homepage = "https://github.com/devhardesian/se-check"
+Issues = "https://github.com/devhardesian/se-check/issues"
+Changelog = "https://github.com/devhardesian/se-check/blob/main/CHANGELOG.md"
+
+[project.scripts]
+se-check = "se_check.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.11.31,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    # Embedded Postgres for the test suite and the playground; CI uses a Postgres service instead.
+    "pgserver>=0.1.4; python_version < '3.13'",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

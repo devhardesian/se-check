@@ -1,0 +1,71 @@
+name: se-check
+description: Find Row Level Security and multi-tenant isolation holes in a Supabase database.
+author: Edoardo
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  project:
+    description: Supabase project folder, the one with supabase/config.toml.
+    default: "."
+  dsn:
+    description: >-
+      Connection string of the database to audit. Leave it empty to audit the project's local
+      database (start it first, e.g. with `supabase db start`). Pass it from a secret.
+    default: ""
+  fail-on:
+    description: Fail when a finding is at least this severe (critical, high, medium, low, info or never).
+    default: high
+  min-severity:
+    description: Leave out findings below this severity.
+    default: low
+  sarif-file:
+    description: Where to write the SARIF report for github/codeql-action/upload-sarif. Empty to skip it.
+    default: se-check.sarif
+  probe:
+    description: >-
+      Also run the dynamic probe ("true" or "false"): act as anon and as users of two tenants
+      on synthetic rows, inside a transaction that is rolled back. Local databases only, unless
+      args holds --probe-remote.
+    default: "false"
+  min-coverage:
+    description: >-
+      With probe, fail when the probe reaches less than this percentage of the tables it could
+      try (tables in [probe] skip_tables don't count). Empty to skip the check.
+    default: ""
+  args:
+    description: Extra arguments for `se-check audit`, e.g. `--schema api`.
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@v6
+
+    - name: Audit the database
+      shell: bash
+      # Inputs travel as environment variables, never pasted into the script.
+      env:
+        SE_CHECK_DSN: ${{ inputs.dsn }}
+        PROJECT: ${{ inputs.project }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        MIN_SEVERITY: ${{ inputs.min-severity }}
+        SARIF_FILE: ${{ inputs.sarif-file }}
+        PROBE: ${{ inputs.probe }}
+        MIN_COVERAGE: ${{ inputs.min-coverage }}
+        EXTRA_ARGS: ${{ inputs.args }}
+      run: |
+        args=(audit --project "$PROJECT" --fail-on "$FAIL_ON" --min-severity "$MIN_SEVERITY" --no-color)
+        if [ -n "$SARIF_FILE" ]; then
+          args+=(--sarif "$SARIF_FILE")
+        fi
+        if [ "$PROBE" = "true" ]; then
+          args+=(--probe)
+        fi
+        if [ -n "$MIN_COVERAGE" ]; then
+          args+=(--min-coverage "$MIN_COVERAGE")
+        fi
+        # EXTRA_ARGS is split on spaces on purpose: it holds several options.
+        # shellcheck disable=SC2086
+        uvx --from "$GITHUB_ACTION_PATH" se-check "${args[@]}" $EXTRA_ARGS

@@ -1,0 +1,15 @@
+# Throwaway Postgres loaded with the deliberately vulnerable example app.
+#
+#   docker compose up -d
+#   se-check audit --dsn postgresql://postgres:postgres@localhost:54329/postgres
+#
+# `docker compose down` throws it away.
+services:
+  example-db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "54329:5432"
+    volumes:
+      - ./examples/vulnerable-app:/docker-entrypoint-initdb.d:ro
