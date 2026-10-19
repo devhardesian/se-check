@@ -114,7 +114,7 @@ def _regions(dsn: str, *codes: str) -> None:
 
 
 def test_a_missing_row_everyone_needs_is_named_as_the_cause(fresh_example):
-    """The 2026-10-09 field test: one row missing, most tables skipped, a clean-looking report."""
+    """One row missing, most tables skipped: the report must not look clean."""
     dsn = fresh_example()
     _regions(dsn)  # no regions at all: nothing to stand in
     report = run_audit(dsn, AuditConfig(), probe=True)

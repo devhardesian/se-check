@@ -1,6 +1,6 @@
 name: Release
 
-# Push a tag like v0.2.0 to publish that version on PyPI. See RELEASING.md.
+# Push a tag like v0.2.0 to publish that version on PyPI.
 on:
   push:
     tags: ["v*"]

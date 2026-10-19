@@ -34,7 +34,6 @@ It reads metadata, never the contents of your tables.
 - [Try it on a deliberately vulnerable app](#try-it-on-a-deliberately-vulnerable-app)
 - [Safety and privacy](#safety-and-privacy)
 - [Limitations](#limitations)
-- [Roadmap](#roadmap)
 - [Development](#development)
 
 ## Why
@@ -280,9 +279,6 @@ loopback address) unless you add `--probe-remote`.
   skipped; `pg_net` and database webhooks only queue requests in a table, which the rollback
   empties.
 
-The design, with the Postgres behavior it relies on, is in
-[docs/design/dynamic-probe.md](docs/design/dynamic-probe.md).
-
 ## Use it from your AI agent (MCP)
 
 **Claude Code**, from your project folder:
@@ -505,27 +501,6 @@ to hook it up to an AI agent. Quitting deletes the database.
 - **Helpers are followed one level deep for `user_metadata`:** a policy → helper → helper
   chain that reads it is not caught yet.
 
-## Roadmap
-
-- [x] Static checks for RLS, permissive policies, `user_metadata`, Auth hooks, signup triggers
-      and `SECURITY DEFINER` functions
-- [x] Accepted findings with a mandatory reason (`se-check.toml`)
-- [x] SARIF output and GitHub Action
-- [x] Dynamic probe: `anon`, users of two tenants and forged `user_metadata` inside a
-      rolled-back transaction; cross-tenant and cross-user reads and writes, escalation on your
-      own row; `probe_database` over MCP
-- [x] Probe coverage before the findings, grouped by root cause, `--min-coverage` for CI;
-      stand-ins for reference rows it can't make
-- [ ] Probe: values that satisfy simple CHECK constraints; privilege columns found by more
-      than their name
-- [ ] Probe: `/rpc` functions called as another tenant's user; roles inside a tenant
-- [ ] Views without `security_invoker`, Storage buckets and policies, Realtime authorization
-- [ ] Secrets hard-coded in functions and triggers; drift between migrations and the live database
-- [ ] Edge Functions: `verify_jwt = false`, `service_role` fed with user input, unsigned
-      webhooks; `service_role` key in the frontend bundle
-- [ ] `review_diff` for pull requests, access-matrix snapshots, pgTAP export
-- [ ] PyPI release (`uvx se-check`): the workflow is ready, see [RELEASING.md](RELEASING.md)
-
 ## Development
 
 ```bash
@@ -545,13 +520,7 @@ positives as well as misses. The probe is split the same way: its planner, claim
 pure (`tests/test_probe_plan.py`, `tests/test_probe_claims.py`, `tests/test_checks_probe.py`),
 and only `probe/execute.py` touches the database (`tests/test_probe_integration.py`).
 
-More reading:
-
-- [docs/design/dynamic-probe.md](docs/design/dynamic-probe.md): how the probe works, the
-  Postgres behavior it relies on, and the decisions behind it.
-- [docs/field-tests](docs/field-tests): se-check run against real applications, what broke and
-  what changed since.
-- [CHANGELOG.md](CHANGELOG.md) and [RELEASING.md](RELEASING.md).
+What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

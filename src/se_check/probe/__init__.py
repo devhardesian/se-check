@@ -3,7 +3,7 @@
 The static checks read definitions; the probe asks Postgres. It creates synthetic users,
 tenants and rows, then tries to read and change tenant B's rows as `anon`, as a member of
 tenant A and as a user of no tenant. Everything is rolled back, only rows the probe created
-are addressed, and findings carry metadata only. See docs/design/dynamic-probe.md.
+are addressed, and findings carry metadata only.
 
     plan_probe (pure) -> execute (the database) -> interpret (pure)
 """
